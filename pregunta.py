@@ -13,20 +13,28 @@ import datetime as dt
 def clean_data():
 
     df = pd.read_csv("solicitudes_credito.csv", sep=";")
-    #
-    # Inserte su código aquí
-    #
-
-    df.sexo= df.sexo.str.lower().astype('category')
-    df.tipo_de_emprendimiento= df.tipo_de_emprendimiento.str.lower().astype('category')
-    df.estrato= df.estrato.astype('category')
-
-    df.fecha_de_beneficio = pd.to_datetime(df.fecha_de_beneficio,infer_datetime_format=True,errors='coerce')
-    df.fecha_de_beneficio = df.fecha_de_beneficio.dt.strftime("%Y/%m/%d")
-
-    df = df.dropna()
+    
+    df.dropna(axis = 0, inplace = True)
     df.drop_duplicates(inplace = True)
+
+    df=df.drop(['Unnamed: 0'], axis=1)
+
+    df.sexo= df.sexo.str.lower()
+    df.tipo_de_emprendimiento= df.tipo_de_emprendimiento.str.lower()    
+    df.idea_negocio= df.idea_negocio.str.lower()
+    df.barrio= df.barrio.str.lower()
+    df.línea_credito = df.línea_credito.str.lower()
+
+    df=df.replace(to_replace="(_)|(-)",value=" ",regex=True)    
+    df=df.replace(to_replace="[,$]|(\.00$)",value="",regex=True)
+
+    df.monto_del_credito = df.monto_del_credito.astype("int")
+    df.comuna_ciudadano = df.comuna_ciudadano.astype("float")
+
+    df.fecha_de_beneficio = pd.to_datetime(df.fecha_de_beneficio,infer_datetime_format=True,errors='ignore',dayfirst=True)
+    df.fecha_de_beneficio = df.fecha_de_beneficio.dt.strftime("%Y/%m/%d")
     
 
+    df.drop_duplicates(inplace = True)
     return df
-print(clean_data())
+
